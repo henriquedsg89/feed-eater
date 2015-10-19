@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        xmlns:g="http://base.google.com/ns/1.0">
+
+    <xs:import namespace="http://base.google.com/ns/1.0"
+               schemaLocation="/home/henrique/workspace/feed-eater/src/main/resources/rss/chaordic.xsd"/>
+    <xs:element name="rss">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="channel">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="title" minOccurs="0"/>
+                            <xs:element name="link" minOccurs="0"/>
+                            <xs:element name="description" minOccurs="0"/>
+                            <xs:element maxOccurs="unbounded" name="item">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="title" type="xs:string"/>
+                                        <xs:element name="description" type="xs:string"/>
+                                        <xs:element name="link" type="xs:string"/>
+                                        <xs:element ref="g:item_group_id"/>
+                                        <xs:element ref="g:id"/>
+                                        <xs:element ref="g:sale_price" />
+                                        <xs:element ref="g:price" />
+                                        <xs:element ref="g:availability" />
+                                        <xs:element ref="g:image_link" />
+                                        <xs:element ref="g:gtin" minOccurs="0"/>
+                                        <xs:element ref="g:brand"  minOccurs="0"/>
+                                        <xs:element ref="g:mpn" minOccurs="0"/>
+                                        <xs:element ref="g:product_type" />
+                                        <xs:element ref="g:google_product_category" />
+                                        <xs:element ref="g:installment"/>
+                                        <xs:element ref="g:condition"  minOccurs="0"/>
+                                        <xs:element ref="g:shipping" minOccurs="0"/>
+                                        <xs:element ref="g:identifier_exists"  minOccurs="0"/>
+                                        <xs:element ref="g:color" />
+                                        <xs:element ref="g:size" />
+                                        <xs:element ref="g:material"  minOccurs="0"/>
+                                        <xs:element ref="g:gender" />
+                                        <xs:element ref="g:age_group"  minOccurs="0"/>
+                                        <xs:element ref="g:custom_label_0" minOccurs="0" />
+                                        <xs:element ref="g:custom_label_1" minOccurs="0" />
+                                        <xs:element ref="g:custom_label_2" minOccurs="0" />
+                                        <xs:element ref="g:custom_label_3" minOccurs="0" />
+                                        <xs:element ref="g:custom_label_4" minOccurs="0" />
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
