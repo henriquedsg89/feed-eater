@@ -2,17 +2,21 @@ package core.validation
 
 import java.net.URL
 import java.util.Date
-
 import akka.actor.{Actor, ActorLogging, ActorRefFactory}
 import core.marshallers.CustomUnmarshallers
 import core.validation.XMLDownloader.DownloadMsg
 import spray.client.pipelining._
 import spray.http.HttpRequest
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import scala.xml.NodeSeq
 import core.web.Cache
+import javax.xml.parsers.SAXParser
+import core.marshallers.CustomUnmarshallers
+import javax.xml.transform.stream.StreamSource
+import core.ValidationSuccess
+import core.ValidationFailed
+import core.ParsingError
+import core.DownloadFailed
 
 object XMLDownloader {
   case class DownloadMsg(httpUrl: URL)
@@ -29,20 +33,28 @@ class XMLDownloaderActor(cache: Cache) extends Actor with ActorLogging {
 
   implicit val dispacher = context.dispatcher
 
-  implicit val NodeSeqUnmarshaller = CustomUnmarshallers.GXMLUnmarshaller
+  implicit val NodeSeqUnmarshaller = CustomUnmarshallers.unmarshaller
 
-  val nodeSeqPipeline: HttpRequest => Future[NodeSeq] = sendReceive ~> unmarshal[NodeSeq]
+  val nodeSeqPipeline: HttpRequest => Future[StreamSource] = sendReceive ~> unmarshal[StreamSource]
 
   def download(httpUrl: URL) {
-    val response: Future[NodeSeq] = nodeSeqPipeline(Get(httpUrl.toString))
+    val response: Future[StreamSource] = nodeSeqPipeline(Get(httpUrl.toString))
 
     response onComplete {
-      case Success(nodeSeq) =>
+      case Success(xmlSource) =>
         log.info("Success")
-        cache.add(new ValidationResult(httpUrl, ProcessStatus.Success, "Ok"))
+        val validationErrors:Option[Seq[ParsingError]] = GXMLSchemaValidator.validate(xmlSource)
+        validationErrors match {
+          case Some(errors) =>
+            log.error(s"XML validation failed with errors")
+            cache.add(new ValidationFailed(httpUrl, errors))
+          case None =>
+            log.info(s"XML validation successful for $httpUrl")
+            cache.add(new ValidationSuccess(httpUrl))
+        }
       case Failure(error) =>
-        log.error("Failure {}", error)
-        cache.add(new ValidationResult(httpUrl, ProcessStatus.Failure, error.toString))
+        log.error(error, s"Fail to download XML from $httpUrl")
+        cache.add(new DownloadFailed(httpUrl, error.getMessage))
     }
   }
 

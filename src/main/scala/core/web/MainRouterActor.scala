@@ -4,9 +4,14 @@ import java.net.URL
 
 import akka.actor._
 import core.validation.XMLDownloader.DownloadMsg
-import core.validation.{ValidationResult, XMLDownloaderActor}
+import core.validation.XMLDownloaderActor
 import spray.http.MediaTypes
 import spray.routing.HttpService
+import core.ErrorType
+import core.ProcessingState
+import core.URLSerializer
+import core.ResultSerializer
+
 
 class MainRouterActor extends Actor with MainRouterService {
 
@@ -73,17 +78,17 @@ trait MainRouterService extends HttpService {
 
 class Cache {
 
-  val queue = new scala.collection.mutable.Queue[ValidationResult]
+  val queue = new scala.collection.mutable.Queue[ProcessingState]
   val maxSize = 10
 
-  def add(validationResult: ValidationResult): Unit = {
+  def add(validationResult: ProcessingState): Unit = {
     queue += validationResult
 
     if (queue.length > maxSize)
       queue.dequeue()
   }
 
-  def listAll(): List[ValidationResult] = {
+  def listAll(): List[ProcessingState] = {
     queue.toList
   }
 }
