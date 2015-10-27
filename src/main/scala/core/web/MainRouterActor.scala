@@ -1,12 +1,15 @@
 package core.web
 
 import java.net.URL
-
 import akka.actor._
 import core.validation.XMLDownloader.DownloadMsg
 import core.validation.XMLDownloaderActor
 import spray.http.MediaTypes
 import spray.routing.HttpService
+import org.json4s._
+import org.json4s.jackson.Serialization
+import org.json4s.jackson.Serialization.write
+import org.json4s.ext.EnumSerializer
 import core.ErrorType
 import core.ProcessingState
 import core.URLSerializer
@@ -23,6 +26,7 @@ class MainRouterActor extends Actor with MainRouterService {
 trait MainRouterService extends HttpService {
 
   implicit def executionContext = actorRefFactory.dispatcher
+  implicit val formats = ResultSerializer.serializer
 
   val cache = new Cache()
   val xmlDownloaderActor = actorRefFactory.actorOf(Props(new XMLDownloaderActor(cache)))
@@ -48,9 +52,9 @@ trait MainRouterService extends HttpService {
       } ~
       path("validation" / "all") {
         get {
-          respondWithMediaType(MediaTypes.`text/html`) {
+          respondWithMediaType(MediaTypes.`application/json`) {
             complete {
-              cache.listAll().mkString("<br/>")
+              write(cache.listAll())
             }
           }
         }
