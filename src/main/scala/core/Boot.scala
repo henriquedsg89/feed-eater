@@ -13,5 +13,5 @@ object Boot extends App {
   val service = system.actorOf(Props[MainRouterActor], "main-router-service")
 
   implicit val timeout = Timeout(5.seconds)
-  IO(Http) ? Http.Bind(service, interface = "192.168.1.15", port = 8080)
+  IO(Http) ? Http.Bind(service, interface = "0.0.0.0", port = 8080)
 }
