@@ -6,12 +6,32 @@
     <xs:element name="id" type="xs:string"/>
     <xs:element name="condition" type="xs:string"/>
     <xs:element name="price" type="xs:string"/>
-    <xs:element name="availability" type="xs:string"/>
+    <xs:element name="availability">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="in stock|out of stock|preorder"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
     <xs:element name="image_link" type="xs:anyURI"/>
     <xs:element name="shipping_weight" type="xs:string"/>
-    <xs:element name="gtin" type="xs:long"/>
+    <xs:element name="gtin">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="(-[0-9])*"/>
+          <xs:maxLength value="50"/>
+        </xs:restriction>
+       </xs:simpleType>
+    </xs:element>
     <xs:element name="brand" type="xs:string"/>
-    <xs:element name="mpn" type="xs:int"/>
+    <xs:element name="mpn">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[a-zA-Z0-9]*"/>
+          <xs:maxLength value="70"/>
+        </xs:restriction>
+       </xs:simpleType>
+    </xs:element>
     <xs:element name="shipping"/>
     <xs:element name="google_product_category" type="xs:string"/>
     <xs:element name="product_type" type="xs:string"/>
@@ -32,6 +52,7 @@
     <xs:element name="material" type="xs:string"/>
     <xs:element name="gender" type="xs:string"/>
     <xs:element name="age_group" type="xs:string"/>
+    <xs:element name="adult" type="xs:string"/>
     <xs:element name="custom_label_0" type="xs:string" />
     <xs:element name="custom_label_1" type="xs:string" />
     <xs:element name="custom_label_2" type="xs:string" />
